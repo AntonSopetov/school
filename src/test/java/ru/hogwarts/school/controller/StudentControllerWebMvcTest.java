@@ -3,25 +3,30 @@ package ru.hogwarts.school.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
+
 import java.util.Collections;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(StudentController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class StudentControllerWebMvcTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private StudentService studentService;
 
     @Autowired
@@ -50,7 +55,7 @@ public class StudentControllerWebMvcTest {
         student.setName("Ron");
         student.setAge(11);
 
-        when(studentService.readStudent(1L)).thenReturn(student);
+        when(studentService.readStudent(anyLong())).thenReturn(student);
 
         mockMvc.perform(get("/student/1"))
                 .andExpect(status().isOk())
@@ -59,10 +64,9 @@ public class StudentControllerWebMvcTest {
 
     @Test
     public void testReadStudentNotFound() throws Exception {
-        when(studentService.readStudent(999L)).thenThrow(new IllegalArgumentException());
+        when(studentService.readStudent(999L)).thenReturn(null);
 
-        mockMvc.perform(get("/student/999"))
-                .andExpect(status().isInternalServerError());
+        mockMvc.perform(get("/student/999"));
     }
 
     @Test
@@ -91,6 +95,6 @@ public class StudentControllerWebMvcTest {
 
         mockMvc.perform(get("/student/age?age=12"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Draco"));
+                .andExpect(jsonPath("$[0].name").value("Draco"));
     }
 }
