@@ -9,7 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.service.FacultyService;
+
 import java.util.Collections;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -90,6 +92,6 @@ public class FacultyControllerWebMvcTest {
 
         mockMvc.perform(get("/faculty/find?name=Ravenclaw"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Ravenclaw"));
+                .andExpect(jsonPath("$[0].name").value("Ravenclaw"));
     }
 }
