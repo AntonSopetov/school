@@ -22,22 +22,31 @@ public class FacultyService {
     }
 
     public Faculty createFaculty(Faculty faculty) {
+        logger.info("Was invoked method for create faculty");
         return facultyRepository.save(faculty);
     }
 
     public Faculty readFaculty(long id) {
-        return facultyRepository.findById(id).orElse(null);
+        logger.info("Was invoked method for read faculty");
+        Faculty faculty = facultyRepository.findById(id).orElse(null);
+        if (faculty == null) {
+            logger.warn("Faculty with id = {} was not found", id);
+        }
+        return faculty;
     }
 
     public Faculty updateFaculty(Faculty faculty) {
+        logger.info("Was invoked method for update faculty");
         return facultyRepository.save(faculty);
     }
 
     public void deleteFaculty(long id) {
+        logger.info("Was invoked method for delete faculty");
         facultyRepository.deleteById(id);
     }
 
     public Collection<Faculty> findByNameOrColour(String name, String colour) {
+        logger.info("Was invoked method for find faculties by name or colour");
         return facultyRepository.findByNameIgnoreCaseOrColourIgnoreCase(name, colour);
     }
 }
