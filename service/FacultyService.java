@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.repository.FacultyRepository;
-
 import java.util.Collection;
+import java.util.Comparator;
 
 @Service
 public class FacultyService {
@@ -48,5 +48,14 @@ public class FacultyService {
     public Collection<Faculty> findByNameOrColour(String name, String colour) {
         logger.info("Was invoked method for find faculties by name or colour");
         return facultyRepository.findByNameIgnoreCaseOrColourIgnoreCase(name, colour);
+    }
+
+    // НОВЫЙ МЕТОД (Шаг 3): Получение самого длинного названия факультета
+    public String getLongestFacultyName() {
+        logger.info("Was invoked method for get longest faculty name");
+        return facultyRepository.findAll().stream()
+                .map(Faculty::getName)
+                .max(Comparator.comparingInt(String::length))
+                .orElse("");
     }
 }
