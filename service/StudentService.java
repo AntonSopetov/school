@@ -70,7 +70,6 @@ public class StudentService {
         return studentRepository.getLastFiveStudents();
     }
 
-    // НОВЫЙ МЕТОД (Шаг 1): Получение имен на 'А' в верхнем регистре, отсортированных по алфавиту
     public List<String> getAllStudentsStartingWithA() {
         logger.info("Was invoked method for get all students starting with A");
         return studentRepository.findAll().stream()
@@ -81,12 +80,63 @@ public class StudentService {
                 .collect(Collectors.toList());
     }
 
-    // НОВЫЙ МЕТОД (Шаг 2): Получение среднего возраста через Stream API
     public double getAverageAgeWithStreams() {
         logger.info("Was invoked method for get average age with streams");
         return studentRepository.findAll().stream()
                 .mapToInt(Student::getAge)
                 .average()
                 .orElse(0);
+    }
+
+    public void printStudentsParallel() {
+        logger.info("Was invoked method for print students parallel");
+        List<Student> students = studentRepository.findAll();
+
+        printName(students, 0);
+        printName(students, 1);
+
+        new Thread(() -> {
+            printName(students, 2);
+            printName(students, 3);
+        }).start();
+
+        new Thread(() -> {
+            printName(students, 4);
+            printName(students, 5);
+        }).start();
+    }
+
+    public void printStudentsSynchronized() {
+        logger.info("Was invoked method for print students synchronized");
+        List<Student> students = studentRepository.findAll();
+
+        printNameSynchronized(students, 0);
+        printNameSynchronized(students, 1);
+
+        new Thread(() -> {
+            printNameSynchronized(students, 2);
+            printNameSynchronized(students, 3);
+        }).start();
+
+        new Thread(() -> {
+            printNameSynchronized(students, 4);
+            printNameSynchronized(students, 5);
+        }).start();
+    }
+
+    private void printName(List<Student> students, int index) {
+        if (index < students.size()) {
+            System.out.println(students.get(index).getName());
+        } else {
+            System.out.println("No student at index " + index);
+        }
+    }
+
+    private synchronized void printNameSynchronized(List<Student> students, int index) {
+        if (index < students.size()) {
+            System.out.println(Thread.currentThread().getName() + ": " + students.get(index).getName());
+        } else {
+            System.out.println(Thread.currentThread().getName() + ": No student at index " + index);
+        }
     }
 }
